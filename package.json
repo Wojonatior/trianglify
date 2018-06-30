@@ -1,0 +1,15 @@
+{
+  "name": "trianglify.totheme",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jarek Wojciechowski",
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^1.6.11",
+    "trianglify": "^1.2.0"
+  }
+}
