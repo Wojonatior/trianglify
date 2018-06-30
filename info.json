@@ -1,0 +1,20 @@
+{
+  "author": {
+    "name" : "Jarek Wojciechowski",
+    "email" : "jarekwojo@gmail.com",
+    "url" : "https://www.github.com/wojonatior"
+  },
+  "credits" : {
+    "name" : "Trianglify.js",
+    "url" : "https://github.com/qrohlf/trianglify"
+  },
+  "comments": "Shifting Trianglify patterns",
+  "created": "2018-06-30",
+  "identifier": "Trianglify",
+  "modified": "2018-06-30",
+  "name": "Trianglify",
+  "rootDocument": "index.html",
+  "type": "html5",
+  "version": 1
+}
+
