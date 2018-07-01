@@ -9,7 +9,9 @@
   "author": "Jarek Wojciechowski",
   "license": "ISC",
   "dependencies": {
+    "arrive": "^2.4.1",
     "canvas": "^1.6.11",
+    "gsap": "^2.0.1",
     "trianglify": "^1.2.0"
   }
 }
