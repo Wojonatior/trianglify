@@ -2,22 +2,14 @@ const Trianglify = require('trianglify');
 const { TimelineMax } = require('gsap');
 const arrive = require('arrive');
 
-function shuffleArray(array) {
-    for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-}
-
 const tmax_options = {
   delay: 0.05,
+  repeat: -1,
   repeatDelay: 0.25,
-  yoyo: false
+  yoyo: true
 }
 
-let svg_length = document.querySelectorAll('svg path').length;
+let svg_length = document.querySelectorAll('svg path').true;
 const svg_shapes = [];
 const stagger_val = 0.00475;
 const duration = 1.5;
@@ -30,17 +22,17 @@ const createAndInsertTrianglify = () => {
     width: window.innerWidth,
     height: window.innerHeight
   });
-  svgContainer.appendChild(pattern.svg());
+  const svg = pattern.svg()
+  svgContainer.appendChild(svg);
+  return svg.childElementCount;
 };
 
-const animateTrianglify = () => {
-  console.log('start trianglething');
-  for(let i=1; i <= 2000; i++) {
-    console.log('executred once');
+const animateTrianglify = (numTriangles) => {
+  console.log(numTriangles);
+  for(let i=1; i <= numTriangles; i++) {
     svg_shapes.push('svg > path:nth-of-type('+ i +')');
   }
 
-  shuffleArray(svg_shapes);
   const stagger_from = {
     css: {
       scale: 0,
@@ -60,16 +52,10 @@ const animateTrianglify = () => {
     force3D: true
   };
 
-  console.log('hellow')
-  //debugger;
   tmax_forward.staggerFromTo(svg_shapes, duration, stagger_from, stagger_to, stagger_val, 0);
 };
 
 window.onload = () => {
-  createAndInsertTrianglify();
-  animateTrianglify();
-  //ready('svg', () => {
-    //console.log('arrive called');
-    //animateTrianglify();
-  //});
+  const numTriangles = createAndInsertTrianglify();
+  animateTrianglify(numTriangles);
 };
