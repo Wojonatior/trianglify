@@ -1,58 +1,55 @@
 const Trianglify = require('trianglify');
 const { TimelineMax } = require('gsap');
-const arrive = require('arrive');
 
-const tmax_options = {
-  delay: 0.05,
+const tmaxOptions = {
+  delay: 0,
   repeat: -1,
   repeatDelay: 0.25,
-  yoyo: true
-}
+  yoyo: true,
+};
 
-let svg_length = document.querySelectorAll('svg path').true;
-const svg_shapes = [];
-const stagger_val = 0.00475;
+const svgShapes = [];
+const staggerVal = 0.00475;
 const duration = 1.5;
 const svgContainer = document.querySelector('.svg-container');
 
-const tmax_forward = new TimelineMax(tmax_options);
+const tmaxForward = new TimelineMax(tmaxOptions);
 
 const createAndInsertTrianglify = () => {
-  var pattern = Trianglify({
+  const pattern = Trianglify({
     width: window.innerWidth,
-    height: window.innerHeight
+    height: window.innerHeight,
   });
-  const svg = pattern.svg()
+  const svg = pattern.svg();
   svgContainer.appendChild(svg);
   return svg.childElementCount;
 };
 
 const animateTrianglify = (numTriangles) => {
-  console.log(numTriangles);
-  for(let i=1; i <= numTriangles; i++) {
-    svg_shapes.push('svg > path:nth-of-type('+ i +')');
+  for (let i = 1; i <= numTriangles; i += 1) {
+    svgShapes.push(`svg > path:nth-of-type(${i})`);
   }
 
-  const stagger_from = {
+  const staggerFrom = {
     css: {
       scale: 0,
       transformOrigin: 'center center',
-      opacity: 0
+      opacity: 0,
     },
     ease: Elastic.easeInOut,
-    force3D: true
+    force3D: true,
   };
 
-  const stagger_to = {
+  const staggerTo = {
     css: {
       scale: 1,
-      opacity: 1
+      opacity: 1,
     },
     ease: Elastic.easeInOut,
-    force3D: true
+    force3D: true,
   };
 
-  tmax_forward.staggerFromTo(svg_shapes, duration, stagger_from, stagger_to, stagger_val, 0);
+  tmaxForward.staggerFromTo(svgShapes, duration, staggerFrom, staggerTo, staggerVal, 0);
 };
 
 window.onload = () => {

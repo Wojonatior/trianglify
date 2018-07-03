@@ -13,5 +13,10 @@
     "canvas": "^1.6.11",
     "gsap": "^2.0.1",
     "trianglify": "^1.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0"
   }
 }
