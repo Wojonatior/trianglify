@@ -1,3 +1,7 @@
+body {
+  margin: 0px;
+}
+
 svg path {
   opacity: 0;
 }
