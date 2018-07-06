@@ -7,6 +7,42 @@ const tmaxOptions = {
   repeat: 0,
 };
 
+
+class ContainerManager {
+  constructor() {
+    this.containerList = [
+      document.querySelector('.svg-container'),
+    ];
+  }
+  getNextContainer() {
+    return this.containerList.pop();
+  }
+
+  returnAndEmptyContainer(container) {
+    container.innerHtml = '';
+    this.containerList.push(container);
+  }
+}
+
+class Triang {
+  constructor(container) {
+    this.triang = Trianglify({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+    this.triangSvg = this.triang.svg();
+    this.container = container;
+  }
+
+  insertTriangIntoContainer() {
+    this.container.appendChild(this.triangSvg);
+  }
+
+  getNumTriangles() {
+    return this.triangSvg ? this.triangSvg.childElementCount : 0;
+  }
+}
+
 const svgShapes = [];
 const staggerVal = 0.00475;
 const duration = 1.5;
@@ -23,9 +59,9 @@ const createAndInsertTrianglify = (container) => {
   return svg.childElementCount;
 };
 
-const animateTrianglify = (numTriangles) => {
+const animateTrianglify = (numTriangles, parentSelectorClass, timeline) => {
   for (let i = 1; i <= numTriangles; i += 1) {
-    svgShapes.push(`svg > path:nth-of-type(${i})`);
+    svgShapes.push(`.${parentSelectorClass} svg > path:nth-of-type(${i})`);
   }
 
   const staggerFrom = {
@@ -47,23 +83,18 @@ const animateTrianglify = (numTriangles) => {
     force3D: true,
   };
 
-  tmaxForward.staggerFromTo(svgShapes, duration, staggerFrom, staggerTo, staggerVal, 0);
+  timeline.staggerFromTo(svgShapes, duration, staggerFrom, staggerTo, staggerVal, 0);
 };
-
-class ContainerManager {
-  constructor() {
-    this.containerList = [
-      document.querySelector('.svg-container'),
-    ];
-  }
-  getNextContainer() {
-    return this.containerList.pop();
-  }
-}
 
 const containerManager = new ContainerManager();
 
 window.onload = () => {
   const numTriangles = createAndInsertTrianglify(containerManager.getNextContainer());
-  animateTrianglify(numTriangles);
+  animateTrianglify(numTriangles, 'svg-container', tmaxForward);
 };
+
+
+/*
+ * OnStart: create n+1 trang and insert into dom
+ * OnFinish: return and empty n-1 container, start next animation with delay
+ */
