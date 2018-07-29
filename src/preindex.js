@@ -26,16 +26,21 @@ class ContainerManager {
 
 class Triang {
   constructor(container) {
+    this.container = container;
     this.triang = Trianglify({
       width: window.innerWidth,
       height: window.innerHeight,
     });
     this.triangSvg = this.triang.svg();
-    this.container = container;
+    // This is where onStart and onFinish will need to be applied
+    this.timeline = new TimelineMax(tmaxOptions);
   }
 
   insertTriangIntoContainer() {
-    this.container.appendChild(this.triangSvg);
+    if (this.container) {
+      console.log('container exists');
+      this.container.appendChild(this.triangSvg);
+    }
   }
 
   getNumTriangles() {
@@ -90,6 +95,8 @@ const containerManager = new ContainerManager();
 
 window.onload = () => {
   const numTriangles = createAndInsertTrianglify(containerManager.getNextContainer());
+  const firstTriang = new Triang(containerManager.getNextContainer());
+  firstTriang.insertTriangIntoContainer();
   animateTrianglify(numTriangles, 'svg-container', tmaxForward);
 };
 
