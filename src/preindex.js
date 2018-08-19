@@ -10,10 +10,13 @@ const tmaxOptions = {
 
 class ContainerManager {
   constructor() {
-    this.containerList = [
-      document.querySelector('.svg-container'),
-    ];
+    const selectors = ['svg-container-1', '#svg-container-2', '#svg-container-3'];
+    this.containerList = selectors.map(selector => ({
+      selector,
+      element: document.querySelector(selector),
+    }));
   }
+
   getNextContainer() {
     return this.containerList.pop();
   }
@@ -66,7 +69,7 @@ const createAndInsertTrianglify = (container) => {
 
 const animateTrianglify = (numTriangles, parentSelectorClass, timeline) => {
   for (let i = 1; i <= numTriangles; i += 1) {
-    svgShapes.push(`.${parentSelectorClass} svg > path:nth-of-type(${i})`);
+    svgShapes.push(`${parentSelectorClass} svg > path:nth-of-type(${i})`);
   }
 
   const staggerFrom = {
@@ -94,10 +97,11 @@ const animateTrianglify = (numTriangles, parentSelectorClass, timeline) => {
 const containerManager = new ContainerManager();
 
 window.onload = () => {
-  const numTriangles = createAndInsertTrianglify(containerManager.getNextContainer());
-  const firstTriang = new Triang(containerManager.getNextContainer());
+  const container = containerManager.getNextContainer();
+  const numTriangles = createAndInsertTrianglify(container.element);
+  const firstTriang = new Triang(container.element);
   firstTriang.insertTriangIntoContainer();
-  animateTrianglify(numTriangles, 'svg-container', tmaxForward);
+  animateTrianglify(numTriangles, container.selector, tmaxForward);
 };
 
 
