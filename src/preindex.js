@@ -7,23 +7,33 @@ const tmaxOptions = {
   repeat: 0,
 };
 
+const staggerVal = 0.00475;
+const duration = 1.5;
 
-class ContainerManager {
-  constructor() {
-    const selectors = ['svg-container-1', '#svg-container-2', '#svg-container-3'];
-    this.containerList = selectors.map(selector => ({
-      selector,
-      element: document.querySelector(selector),
-    }));
+let numDone = 0;
+
+
+class ContainerFactory {
+  constructor(targetSelector) {
+    this.targetSelector = targetSelector;
+    this.targetContainer = document.querySelector(targetSelector);
+    this.n = 0;
   }
 
   getNextContainer() {
-    return this.containerList.pop();
-  }
+    const newDiv = document.createElement('div');
+    const divClass = `divNum${this.n}`;
+    if (newDiv.classList)
+      newDiv.classList.add(divClass);
+    else
+      newDiv.className += ' ' + divClass;
 
-  returnAndEmptyContainer(container) {
-    container.innerHtml = '';
-    this.containerList.push(container);
+    this.targetContainer.appendChild(newDiv);
+    this.n += 1;
+    return {
+      element: newDiv,
+      selector: '.' + divClass,
+    };
   }
 }
 
@@ -33,10 +43,9 @@ class Triang {
     this.triang = Trianglify({
       width: window.innerWidth,
       height: window.innerHeight,
+      seed: Math.random(),
     });
     this.triangSvg = this.triang.svg();
-    // This is where onStart and onFinish will need to be applied
-    this.timeline = new TimelineMax(tmaxOptions);
   }
 
   insertTriangIntoContainer() {
@@ -51,11 +60,20 @@ class Triang {
   }
 }
 
-const svgShapes = [];
-const staggerVal = 0.00475;
-const duration = 1.5;
 
-const tmaxForward = new TimelineMax(tmaxOptions);
+class MyTimeline {
+  constructor(createAndAnimateNext) {
+    this.timeline = new TimelineMax(tmaxOptions);
+    const delayedStart = () => {
+      setTimeout(createAndAnimateNext, 10000);
+    };
+    this.timeline.eventCallback('onComplete', delayedStart);
+  }
+
+  getTimeline() {
+    return this.timeline;
+  }
+}
 
 const createAndInsertTrianglify = (container) => {
   const pattern = Trianglify({
@@ -67,10 +85,14 @@ const createAndInsertTrianglify = (container) => {
   return svg.childElementCount;
 };
 
+const generateShapeSelectors = (numTriangles, parentSelectorClass) => (
+  [...Array(numTriangles).keys()].map(i => (
+    `${parentSelectorClass} svg > path:nth-of-type(${i})`
+  ))
+);
+
 const animateTrianglify = (numTriangles, parentSelectorClass, timeline) => {
-  for (let i = 1; i <= numTriangles; i += 1) {
-    svgShapes.push(`${parentSelectorClass} svg > path:nth-of-type(${i})`);
-  }
+  const svgShapes = generateShapeSelectors(numTriangles, parentSelectorClass);
 
   const staggerFrom = {
     css: {
@@ -94,18 +116,24 @@ const animateTrianglify = (numTriangles, parentSelectorClass, timeline) => {
   timeline.staggerFromTo(svgShapes, duration, staggerFrom, staggerTo, staggerVal, 0);
 };
 
-const containerManager = new ContainerManager();
+const containerFactory = new ContainerFactory('#container-container');
 
-window.onload = () => {
-  const container = containerManager.getNextContainer();
-  const numTriangles = createAndInsertTrianglify(container.element);
-  const firstTriang = new Triang(container.element);
-  firstTriang.insertTriangIntoContainer();
-  animateTrianglify(numTriangles, container.selector, tmaxForward);
+const getResources = (createAndAnimateNext) => {
+  const container = containerFactory.getNextContainer();
+  const triang = new Triang(container.element, createAndAnimateNext);
+  const tmax = new MyTimeline(createAndAnimateNext);
+  return { container, triang, tmax };
 };
 
+const createAndAnimateNext = () => {
+  if (numDone <= 3) {
+    const { triang, container, tmax } = getResources(createAndAnimateNext);
+    triang.insertTriangIntoContainer();
+    animateTrianglify(triang.getNumTriangles(), container.selector, tmax.getTimeline());
+    numDone += 1;
+  }
+};
 
-/*
- * OnStart: create n+1 trang and insert into dom
- * OnFinish: return and empty n-1 container, start next animation with delay
- */
+window.onload = () => {
+  createAndAnimateNext();
+};

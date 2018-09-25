@@ -4,4 +4,16 @@ body {
 
 svg path {
   opacity: 0;
+  scale: 0;
+}
+
+#container-container {
+  background-color: rgba(0,0,0,0);
+}
+
+#container-container div {
+  background-color: rgba(0,0,0,0);
+  position: fixed;
+  top: 0;
+  left: 0;
 }
