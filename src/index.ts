@@ -1,6 +1,8 @@
 /* eslint-env browser */
-const Trianglify = require('trianglify');
-const { TimelineMax } = require('gsap');
+//require("Trianglify");
+import { TimelineMax } from 'gsap';
+import * as Trianglify from 'Trianglify';
+import * as TrianglifyTypes from './triang-types';
 
 const tmaxOptions = {
   delay: 0,
@@ -14,9 +16,13 @@ let numDone = 0;
 
 
 class ContainerFactory {
-  constructor(targetSelector) {
-    this.targetSelector = targetSelector;
-    this.targetContainer = document.querySelector(targetSelector);
+  targetSelector: string;
+  targetContainer: Element | null;
+  n: number;
+
+  constructor(_targetSelector: string) {
+    this.targetSelector = _targetSelector;
+    this.targetContainer = document.querySelector(_targetSelector);
     this.n = 0;
   }
 
@@ -28,7 +34,10 @@ class ContainerFactory {
     else
       newDiv.className += ' ' + divClass;
 
-    this.targetContainer.appendChild(newDiv);
+    if(this.targetContainer)
+      this.targetContainer.appendChild(newDiv);
+    else
+      console.error("can't appendChild to target container, targetContainer not found");
     this.n += 1;
     return {
       element: newDiv,
@@ -38,17 +47,23 @@ class ContainerFactory {
 }
 
 class Triang {
-  constructor(container) {
-    this.container = container;
+  container: Element;
+  triang: TrianglifyTypes.Pattern;
+  triangSvg: Element
+
+  constructor(_container: Element) {
+    this.container = _container;
     this.triang = Trianglify({
       width: window.innerWidth,
       height: window.innerHeight,
       seed: Math.random(),
     });
+    this.triang;
     this.triangSvg = this.triang.svg();
   }
 
   insertTriangIntoContainer() {
+    console.log('trying to insert triang into container');
     if (this.container) {
       console.log('container exists');
       this.container.appendChild(this.triangSvg);
@@ -62,7 +77,9 @@ class Triang {
 
 
 class MyTimeline {
-  constructor(createAndAnimateNext) {
+  timeline: TimelineMax;
+
+  constructor(createAndAnimateNext: () => void) {
     this.timeline = new TimelineMax(tmaxOptions);
     const delayedStart = () => {
       setTimeout(createAndAnimateNext, 10000);
@@ -75,7 +92,7 @@ class MyTimeline {
   }
 }
 
-const createAndInsertTrianglify = (container) => {
+const createAndInsertTrianglify = (container: HTMLElement) => {
   const pattern = Trianglify({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -85,13 +102,17 @@ const createAndInsertTrianglify = (container) => {
   return svg.childElementCount;
 };
 
-const generateShapeSelectors = (numTriangles, parentSelectorClass) => (
-  [...Array(numTriangles).keys()].map(i => (
+const getRange = (i: number): number[] => {
+  return [...Array(i).keys()];
+};
+
+const generateShapeSelectors = (numTriangles: number, parentSelectorClass: string) => (
+  getRange(numTriangles).map(i => (
     `${parentSelectorClass} svg > path:nth-of-type(${i})`
   ))
 );
 
-const animateTrianglify = (numTriangles, parentSelectorClass, timeline) => {
+const animateTrianglify = (numTriangles: number, parentSelectorClass: string, timeline: TimelineMax) => {
   const svgShapes = generateShapeSelectors(numTriangles, parentSelectorClass);
 
   const staggerFrom = {
@@ -118,9 +139,9 @@ const animateTrianglify = (numTriangles, parentSelectorClass, timeline) => {
 
 const containerFactory = new ContainerFactory('#container-container');
 
-const getResources = (createAndAnimateNext) => {
+const getResources = (createAndAnimateNext: () => void) => {
   const container = containerFactory.getNextContainer();
-  const triang = new Triang(container.element, createAndAnimateNext);
+  const triang = new Triang(container.element);
   const tmax = new MyTimeline(createAndAnimateNext);
   return { container, triang, tmax };
 };
@@ -134,6 +155,19 @@ const createAndAnimateNext = () => {
   }
 };
 
+
 window.onload = () => {
+  console.log('onload fired');
   createAndAnimateNext();
 };
+
+if(document.readyState === "complete") {
+  console.log('readyState complete');
+  createAndAnimateNext();
+}
+console.log('hello what is going on');
+
+window.addEventListener('load', function () {
+  console.log('window event load');
+  createAndAnimateNext();
+}, false);
