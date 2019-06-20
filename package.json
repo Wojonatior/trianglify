@@ -19,7 +19,9 @@
     "webpack": "^4.29.2"
   },
   "devDependencies": {
+    "ts-loader": "^6.0.3",
     "typescript": "^3.2.4",
-    "watchify": "^3.11.1"
+    "watchify": "^3.11.1",
+    "webpack-cli": "^3.3.4"
   }
 }

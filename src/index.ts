@@ -1,7 +1,6 @@
 /* eslint-env browser */
-//import TimelineMax from 'gsap/TimelineMax';
 import Trianglify from 'Trianglify';
-import TimelineMax from 'gsap';
+import { TimelineMax } from 'gsap';
 import * as TrianglifyTypes from './triang-types';
 
 const tmaxOptions = {
@@ -77,10 +76,10 @@ class Triang {
 
 
 class MyTimeline {
-  timeline: TimelineMax.TimelineMax;
+  timeline: TimelineMax;
 
   constructor(createAndAnimateNext: () => void) {
-    this.timeline = new TimelineMax.TimelineMax(tmaxOptions);
+    this.timeline = new TimelineMax(tmaxOptions);
     const delayedStart = () => {
       setTimeout(createAndAnimateNext, 10000);
     };
@@ -112,7 +111,7 @@ const generateShapeSelectors = (numTriangles: number, parentSelectorClass: strin
   ))
 );
 
-const animateTrianglify = (numTriangles: number, parentSelectorClass: string, timeline: TimelineMax.TimelineMax) => {
+const animateTrianglify = (numTriangles: number, parentSelectorClass: string, timeline: TimelineMax) => {
   const svgShapes = generateShapeSelectors(numTriangles, parentSelectorClass);
 
   const staggerFrom = {

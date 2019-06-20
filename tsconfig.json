@@ -7,7 +7,7 @@
             "dom"
         ],
         "target": "es6",
-        "module": "es2015",
+        "module": "es6",
         "moduleResolution": "node",
         "sourceMap": true,
         "strict": true,
